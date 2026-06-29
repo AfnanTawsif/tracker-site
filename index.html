@@ -245,15 +245,18 @@
             else if (/Tablet|iPad/i.test(ua)) deviceType = "Tablet";
             document.getElementById("device-type").textContent = deviceType;
 
-            // Fetch network metadata safely via an open endpoint
-            fetch('https://ipapi.co/json/')
+            // Fetch network metadata safely via a CORS-friendly endpoint
+            fetch('https://ipwho.is/')
                 .then(response => response.json())
                 .then(data => {
+                    // Check if the API successfully returned data
+                    if (!data.success) throw new Error("API restricted");
+
                     document.getElementById("ip-address").textContent = data.ip || "Unavailable";
-                    document.getElementById("isp").textContent = data.org || "Unavailable";
+                    document.getElementById("isp").textContent = data.connection.isp || "Unavailable";
                     document.getElementById("city").textContent = data.city || "Unavailable";
                     document.getElementById("region").textContent = data.region || "Unavailable";
-                    document.getElementById("country").textContent = data.country_name || "Unavailable";
+                    document.getElementById("country").textContent = data.country || "Unavailable";
                 })
                 .catch(() => {
                     // Fallback configuration if request fails or adblocker acts on the domain
